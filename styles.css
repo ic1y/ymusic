@@ -67,6 +67,9 @@ h3{
 	max-height: 240px;
 	max-width: 240px;
 }
+.result>h2,.result>h3{
+	margin: 4px;
+}
 #audioctn {
 	padding: 8px;
 }
