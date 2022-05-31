@@ -87,7 +87,7 @@ window.addEventListener("load", () => {
 				}
 				if(item.author) {
 					const author = document.createElement("h3");
-					author.innerText = "- " + item.author.name;
+					author.innerText = item.author.name;
 					audioContainer.appendChild(author);	
 				}
 				audio.play();
