@@ -76,6 +76,11 @@ window.addEventListener("load", () => {
 				stream.end();
 				alert();
 				audioContainer.textContent = results.textContent = "";
+				if(item.bestThumbnail) {
+					const thumb = document.createElement("img");
+					thumb.src = item.bestThumbnail.url;
+					audioContainer.appendChild(thumb);
+				}
 				const audio = document.createElement("audio");
 				audio.src = source;
 				audio.controls = true;
@@ -100,7 +105,7 @@ window.addEventListener("load", () => {
 		searchInput.addEventListener("keydown",e=>{if(e.key == "Enter")search();});
 		document.getElementById("searchbtn").addEventListener("click",search)
 		window.addEventListener("keydown",e=>{
-			if(e.key == "/" && (e.ctrlKey || e.metaKey)) {
+			if(e.key == "/" && e.ctrlKey) {
 				e.preventDefault();
 				searchInput.focus();
 			}
