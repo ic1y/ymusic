@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/ic1y/youtube-music-app",
+  "repository": "https://github.com/ic1y/ymusic",
   "keywords": [],
   "author": "Gilbert",
   "license": "",
@@ -15,7 +15,6 @@
     "electron-packager": "^15.5.1"
   },
   "dependencies": {
-    "open": "^8.4.0",
     "plyr": "^3.7.2",
     "ytdl-core": "^4.11.0",
     "ytsr": "^3.8.0"
