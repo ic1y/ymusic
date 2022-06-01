@@ -5,20 +5,21 @@ ytsr = require("ytsr"),
 fs = require("fs"),
 path = require("path"),
 open = require("open");
-window.addEventListener("load", () => {
+window.addEventListener("load", async () => {
 	try{
 		if (!fs.existsSync(path.join(getAppDataPath(), "audio"))) fs.mkdirSync(path.join(getAppDataPath(), "audio"));
-		clear();
+		await clear();
 		const searchInput = document.getElementById("search"),
 		results = document.getElementById("results"),
 		audioContainer = document.getElementById("audioctn"),
 		alertText = document.getElementById("alert"),
 		alertContainer = document.getElementById("alertctn");
+		const audio = document.createElement("audio");
 		var processing = false;
 		if(localStorage.getItem("search") != null) searchInput.value = localStorage.getItem("search");
 		if(localStorage.getItem("lastPlayed") != null) {
 			alert("resuming last session...");
-			play(JSON.parse(localStorage.getItem("lastPlayed")));
+			await play(JSON.parse(localStorage.getItem("lastPlayed")));
 		};
 		function getAppDataPath() {
 			switch (process.platform) {
@@ -103,13 +104,13 @@ window.addEventListener("load", () => {
 		async function play(item) {
 			if(processing) return;
 			processing = true;
-			clear();
+			await clear();
 			const source = path.join(getAppDataPath(), "audio", ytdl.getVideoID(item.url));
 			const stream = ytdl(ytdl.getVideoID(item.url), {quality:"highestaudio",filter:"audioonly"}).pipe(fs.createWriteStream(source));
 			stream.addListener("finish", async () => {
 				stream.end();
 				alert();
-				removeAllChildren(audioContainer)
+				removeAllChildren(audioContainer);
 				audioContainer.classList.remove("hidden")
 				localStorage.setItem("lastPlayed",JSON.stringify(item));
 				if(item.bestThumbnail) {
@@ -117,7 +118,6 @@ window.addEventListener("load", () => {
 					thumb.src = item.bestThumbnail.url;
 					audioContainer.appendChild(thumb);
 				}
-				const audio = document.createElement("audio");
 				audio.src = source;
 				audio.controls = true;
 				audioContainer.appendChild(audio);
@@ -134,27 +134,6 @@ window.addEventListener("load", () => {
 				audioContainer.scrollIntoView();
 				audioContainer.focus();
 				audio.play();
-				window.addEventListener("keydown", async (e) => {
-					if(typeof audio == "undefined" || e.target.tagName == "INPUT") return;
-					switch (e.key) {
-						case "k":
-							audio.paused?await audio.play():audio.pause();
-							alert((audio.paused?"paused":"played") + " audio!");
-							break;
-						case "l":
-							audio.loop = !audio.loop;
-							alert((audio.loop?"looped":"unlooped") + " audio!");
-							break;
-						case "m":
-							audio.muted = !audio.muted;
-							alert((audio.muted?"muted":"unmuted") + " audio!");
-							break;
-						case "a":
-							audioContainer.scrollIntoView();
-							audioContainer.focus();
-							break;
-					}
-				})
 				processing = false;
 			})	
 		}
@@ -168,10 +147,29 @@ window.addEventListener("load", () => {
 		document.getElementById("aboutbtn").addEventListener("click",()=>{
 			location.href = "./about.html";
 		})
-		window.addEventListener("keydown",e=>{
-			if(e.key == "/" && e.target.tagName != "INPUT") {
+		window.addEventListener("keydown", async (e) => {
+			if(e.target.tagName == "INPUT") return;
+			if(e.key == "/") {
 				e.preventDefault();
 				searchInput.focus();
+			}
+			if(audio.src.length > 0) switch (e.key) {
+				case "k":
+					audio.paused?await audio.play():audio.pause();
+					alert((audio.paused?"paused":"played") + " audio!");
+					break;
+				case "l":
+					audio.loop = !audio.loop;
+					alert((audio.loop?"looped":"unlooped") + " audio!");
+					break;
+				case "m":
+					audio.muted = !audio.muted;
+					alert((audio.muted?"muted":"unmuted") + " audio!");
+					break;
+				case "j":
+					audioContainer.scrollIntoView();
+					audioContainer.focus();
+					break;
 			}
 		})
 	} catch(err) {
