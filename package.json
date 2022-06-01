@@ -1,6 +1,6 @@
 {
   "name": "ymusic",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "music app for youtube",
   "main": "main.js",
   "scripts": {
@@ -9,7 +9,7 @@
   "repository": "https://github.com/ic1y/youtube-music-app",
   "keywords": [],
   "author": "Gilbert",
-  "license": "CC0-1.0",
+  "license": "",
   "devDependencies": {
     "electron": "^19.0.1",
     "electron-packager": "^15.5.1"
