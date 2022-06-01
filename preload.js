@@ -3,19 +3,35 @@
 const ytdl = require("ytdl-core"),
 ytsr = require("ytsr"),
 fs = require("fs"),
-path = require("path");
+path = require("path"),
+open = require("open");
 window.addEventListener("load", () => {
 	try{
-		if (!fs.existsSync('./audio')) fs.mkdirSync('./audio');
+		if (!fs.existsSync("./audio")) fs.mkdirSync("./audio");
 		clear();
 		const searchInput = document.getElementById("search"),
 		results = document.getElementById("results"),
 		audioContainer = document.getElementById("audioctn"),
-		alertText = document.getElementById("alert");
+		alertText = document.getElementById("alert"),
+		alertContainer = document.getElementById("alertctn");
 		var processing = false;
 		if(localStorage.getItem("search") != null) searchInput.value = localStorage.getItem("search");
+		if(localStorage.getItem("lastPlayed") != null) {
+			alert("resuming last session...");
+			play(JSON.parse(localStorage.getItem("lastPlayed")));
+		};
+		function removeAllChildren(parent) {
+			while (parent.lastChild) {
+				parent.removeChild(parent.lastChild);
+			}
+		}
 		function alert(text) {
-			text?alertText.innerText = text:alertText.innerHTML = "&nbsp;";
+			if(text) {
+				alertText.innerText = text;
+				alertContainer.classList.remove("hidden");
+			} else {
+				alertContainer.classList.add("hidden");
+			}
 		}
 		async function clear() {
 			const directory = "audio";
@@ -27,16 +43,17 @@ window.addEventListener("load", () => {
 			});		
 		}
 		async function search() {
-			if(processing) return;
+			if(processing || searchInput.value.trim() == "") return;
 			processing = true;
-			alert("processing...")
+			alert("searching...")
 			const filters = await ytsr.getFilters(searchInput.value),
 			videoFilter = filters.get("Type").get("Video");
 			ytsr(videoFilter.url, {
 				limit: 20,
 			}).then(res => {
 				alert();
-				audioContainer.textContent = results.textContent = "";
+				removeAllChildren(results)
+				results.classList.remove("hidden")
 				res.items.forEach(item => {
 					const result = document.createElement("a");
 					result.href = item.url;
@@ -57,8 +74,8 @@ window.addEventListener("load", () => {
 						result.appendChild(author);	
 					}
 					result.addEventListener("click",e=>{
-						alert("downloading audio to play...");
 						e.preventDefault();
+						alert("downloading audio to play...");
 						play(item);
 					})
 					results.appendChild(result);
@@ -75,7 +92,9 @@ window.addEventListener("load", () => {
 			stream.addListener("finish", async () => {
 				stream.end();
 				alert();
-				audioContainer.textContent = results.textContent = "";
+				removeAllChildren(audioContainer)
+				audioContainer.classList.remove("hidden")
+				localStorage.setItem("lastPlayed",JSON.stringify(item));
 				if(item.bestThumbnail) {
 					const thumb = document.createElement("img");
 					thumb.src = item.bestThumbnail.url;
@@ -95,22 +114,50 @@ window.addEventListener("load", () => {
 					author.innerText = item.author.name;
 					audioContainer.appendChild(author);	
 				}
+				audioContainer.scrollIntoView();
+				audioContainer.focus();
 				audio.play();
+				window.addEventListener("keydown", async (e) => {
+					if(typeof audio == "undefined" || e.target.tagName == "INPUT") return;
+					switch (e.key) {
+						case "k":
+							audio.paused?await audio.play():audio.pause();
+							alert((audio.paused?"paused":"played") + " audio!");
+							break;
+						case "l":
+							audio.loop = !audio.loop;
+							alert((audio.loop?"looped":"unlooped") + " audio!");
+							break;
+						case "m":
+							audio.muted = !audio.muted;
+							alert((audio.muted?"muted":"unmuted") + " audio!");
+							break;
+						case "a":
+							audioContainer.scrollIntoView();
+							audioContainer.focus();
+							break;
+					}
+				})
 				processing = false;
 			})	
 		}
 		searchInput.addEventListener("input",()=>{
 			localStorage.setItem("search",searchInput.value);
 		})
-		searchInput.addEventListener("keydown",e=>{if(e.key == "Enter")search();});
+		searchInput.addEventListener("keydown",e=>{
+			if(e.key == "Enter") search();
+		});
 		document.getElementById("searchbtn").addEventListener("click",search)
+		document.getElementById("aboutbtn").addEventListener("click",()=>{
+			open("./about.html");
+		})
 		window.addEventListener("keydown",e=>{
-			if(e.key == "/" && e.ctrlKey) {
+			if(e.key == "/" && e.target.tagName != "INPUT") {
 				e.preventDefault();
 				searchInput.focus();
 			}
-		})		
+		})
 	} catch(err) {
-		console.error(err)
+		console.error(err);
 	}
 })

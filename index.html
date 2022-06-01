@@ -5,15 +5,16 @@
     <link href="./styles.css" rel="stylesheet">
     <title>youtube audio player</title>
   </head>
-  <body class="center column">  
+  <body class="center column"> 
+    <div id="alertctn" class="center column hidden"><p id="alert"></p></div>
     <header class="center row">
       <h1 class="title">youtube audio player</h1>
-      <input type="text" id="search" autofocus spellcheck="false" autocomplete="off" placeholder="try ctrl + /?">
+      <input type="text" id="search" autofocus spellcheck="false" autocomplete="off" placeholder="type something">
       <button id="searchbtn">search</button>
+      <button id="aboutbtn">about</button>
     </header>
-    <div class="center column"><p id="alert">&nbsp;</p></div>
-    <div id="results" class="center row"></div>
-    <div id="audioctn" class="center column"></div>
+    <div id="results" class="center row hidden"></div>
+    <div id="audioctn" class="center column hidden" tabindex="0"></div>
     <!--script src="./renderer.js"></script-->
   </body>
 </html>
