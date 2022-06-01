@@ -7,7 +7,7 @@ path = require("path"),
 open = require("open");
 window.addEventListener("load", () => {
 	try{
-		if (!fs.existsSync("./audio")) fs.mkdirSync("./audio");
+		if (!fs.existsSync(path.join(getAppDataPath(), "audio"))) fs.mkdirSync(path.join(getAppDataPath(), "audio"));
 		clear();
 		const searchInput = document.getElementById("search"),
 		results = document.getElementById("results"),
@@ -20,6 +20,23 @@ window.addEventListener("load", () => {
 			alert("resuming last session...");
 			play(JSON.parse(localStorage.getItem("lastPlayed")));
 		};
+		function getAppDataPath() {
+			switch (process.platform) {
+				case "darwin": {
+					return path.join(process.env.HOME, "Library", "Application Support", "YMusic");
+				}
+				case "win32": {
+					return path.join(process.env.APPDATA, "YMusic");
+				}
+				case "linux": {
+					return path.join(process.env.HOME, ".YMusic");
+				}
+				default: {
+					console.log("Unsupported platform!");
+					process.exit(1);
+				}
+			}
+		}
 		function removeAllChildren(parent) {
 			while (parent.lastChild) {
 				parent.removeChild(parent.lastChild);
@@ -34,7 +51,7 @@ window.addEventListener("load", () => {
 			}
 		}
 		async function clear() {
-			const directory = "audio";
+			const directory = path.join(getAppDataPath(),'audio');
 			fs.readdir(directory, (err, files) => {
 				if (err) throw err;
 				for (const file of files) {
@@ -87,7 +104,7 @@ window.addEventListener("load", () => {
 			if(processing) return;
 			processing = true;
 			clear();
-			const source = "./audio/" + ytdl.getVideoID(item.url);
+			const source = path.join(getAppDataPath(), "audio", ytdl.getVideoID(item.url));
 			const stream = ytdl(ytdl.getVideoID(item.url), {quality:"highestaudio",filter:"audioonly"}).pipe(fs.createWriteStream(source));
 			stream.addListener("finish", async () => {
 				stream.end();
