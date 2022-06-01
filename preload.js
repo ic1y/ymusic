@@ -166,7 +166,7 @@ window.addEventListener("load", () => {
 		});
 		document.getElementById("searchbtn").addEventListener("click",search)
 		document.getElementById("aboutbtn").addEventListener("click",()=>{
-			open("./about.html");
+			location.href = "./about.html";
 		})
 		window.addEventListener("keydown",e=>{
 			if(e.key == "/" && e.target.tagName != "INPUT") {
