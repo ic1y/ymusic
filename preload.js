@@ -3,8 +3,7 @@
 const ytdl = require("ytdl-core"),
 ytsr = require("ytsr"),
 fs = require("fs"),
-path = require("path"),
-open = require("open");
+path = require("path");
 window.addEventListener("load", async () => {
 	try{
 		if (!fs.existsSync(path.join(getAppDataPath(), "audio"))) fs.mkdirSync(path.join(getAppDataPath(), "audio"));

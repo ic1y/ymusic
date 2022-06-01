@@ -16,6 +16,9 @@
 		a{
 			color: #bdf;
 		}
+		details,summary{
+			margin: 8px 0;
+		}
 	</style>
 	<article>
 		<h1>YMusic</h1>
@@ -28,12 +31,24 @@
 			<li>loop/unloop audio [l]</li>
 			<li>mute/unmute audio [m]</li>
 		</ul>
-		<h2>Links</h2>
+		<h2>Known issues</h2>
+		<details>
+			<summary>Audio from last session does not play on first load</summary>
+			No idea why this happens, but it can be fixed by simply refreshing it once.
+		</details>
+		<details>
+			<summary>Unable to play flagged videos</summary>
+			Sorry, Youtube does not allow us to access such videos. You can watch them on the official client, though.
+			Also, the whole application might be rendered unusable, in that case please reload it again.
+		</details>
+		<h2>Other</h2>
 		<ul>
 			<li>check out <a href="https://github.com/ic1y/youtube-audio-app">the YMusic git repository</a></li>
 			<li><a href="https://ic1y.github.io/">all my stuff</a></li>
 		</ul>
-		<a href="./index.html">return to YMusic</a>
+		<h2>
+			<a href="./index.html">return to YMusic</a>
+		</h2>
 	</article>
 </body>
 </html>
