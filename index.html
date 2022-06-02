@@ -2,9 +2,12 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./styles.css" rel="stylesheet">
     <title>YMusic</title>
     <meta name="description" content="youtube audio player">
+    <link rel="stylesheet" href="https://unpkg.com/plyr/dist/plyr.css">
+    <script src="https://unpkg.com/plyr/dist/plyr.min.js"></script>
   </head>
   <body class="center column"> 
     <div id="alertctn" class="center column hidden"><p id="alert"></p></div>
@@ -12,10 +15,10 @@
       <h1 class="title">YMusic</h1>
       <input type="text" id="search" autofocus spellcheck="false" autocomplete="off" placeholder="type something">
       <button id="searchbtn">search</button>
-      <button id="aboutbtn">about</button>
+      <button id="clearbtn">clear</button>
     </header>
-    <div id="results" class="center row hidden"></div>
     <div id="audioctn" class="center column hidden" tabindex="0"></div>
-    <!--script src="./renderer.js"></script-->
+    <div id="results" class="center row hidden"></div>
+    <script src="./renderer.js" defer></script>
   </body>
 </html>

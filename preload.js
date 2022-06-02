@@ -1,5 +1,3 @@
-// All of the Node.js APIs are available in the preload process.
-// It has the same sandbox as a Chrome extension.
 const ytdl = require("ytdl-core"),
 ytsr = require("ytsr"),
 fs = require("fs"),
@@ -13,7 +11,6 @@ window.addEventListener("load", async () => {
 		audioContainer = document.getElementById("audioctn"),
 		alertText = document.getElementById("alert"),
 		alertContainer = document.getElementById("alertctn");
-		const audio = document.createElement("audio");
 		var processing = false;
 		if(localStorage.getItem("search") != null) searchInput.value = localStorage.getItem("search");
 		if(localStorage.getItem("lastPlayed") != null) {
@@ -66,7 +63,7 @@ window.addEventListener("load", async () => {
 			const filters = await ytsr.getFilters(searchInput.value),
 			videoFilter = filters.get("Type").get("Video");
 			ytsr(videoFilter.url, {
-				limit: 20,
+				limit: 100,
 			}).then(res => {
 				alert();
 				removeAllChildren(results)
@@ -96,8 +93,10 @@ window.addEventListener("load", async () => {
 						play(item);
 					})
 					results.appendChild(result);
-					processing = false;
 				})
+				results.firstChild.scrollIntoView();
+				results.firstChild.focus();
+				processing = false;
 			});
 		}
 		async function play(item) {
@@ -117,8 +116,8 @@ window.addEventListener("load", async () => {
 					thumb.src = item.bestThumbnail.url;
 					audioContainer.appendChild(thumb);
 				}
+				const audio = document.createElement("audio");
 				audio.src = source;
-				audio.controls = true;
 				audioContainer.appendChild(audio);
 				if(item.title) {
 					const title = document.createElement("h2");
@@ -133,6 +132,7 @@ window.addEventListener("load", async () => {
 				audioContainer.scrollIntoView();
 				audioContainer.focus();
 				audio.play();
+				window.dispatchEvent(new Event("plyr"));
 				processing = false;
 			})	
 		}
@@ -143,31 +143,16 @@ window.addEventListener("load", async () => {
 			if(e.key == "Enter") search();
 		});
 		document.getElementById("searchbtn").addEventListener("click",search)
-		document.getElementById("aboutbtn").addEventListener("click",()=>{
-			location.href = "./about.html";
+		document.getElementById("clearbtn").addEventListener("click",()=>{
+			localStorage.clear();
+			alert("cleared localStorage!");
 		})
 		window.addEventListener("keydown", async (e) => {
 			if(e.target.tagName == "INPUT") return;
-			if(e.key == "/") {
-				e.preventDefault();
-				searchInput.focus();
-			}
-			if(audio.src.length > 0) switch (e.key) {
-				case "k":
-					audio.paused?await audio.play():audio.pause();
-					alert((audio.paused?"paused":"played") + " audio!");
-					break;
-				case "l":
-					audio.loop = !audio.loop;
-					alert((audio.loop?"looped":"unlooped") + " audio!");
-					break;
-				case "m":
-					audio.muted = !audio.muted;
-					alert((audio.muted?"muted":"unmuted") + " audio!");
-					break;
-				case "j":
-					audioContainer.scrollIntoView();
-					audioContainer.focus();
+			switch (e.key) {
+				case "/":
+					e.preventDefault();
+					searchInput.focus();
 					break;
 			}
 		})
